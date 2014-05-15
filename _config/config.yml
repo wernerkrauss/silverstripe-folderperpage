@@ -1,0 +1,15 @@
+---
+Name: folderperpage
+After: 'framework/*','cms/*'
+---
+
+RootFolder:
+  ignored_classes:
+    ['VirtualPage', 'ErrorPage']
+  create_folder_for_translations: false
+  folder_root: 'Articles'
+
+
+Page:
+  extensions:
+    ['RootFolder']
