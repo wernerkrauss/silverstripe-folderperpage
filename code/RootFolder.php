@@ -63,8 +63,9 @@ class RootFolder extends DataExtension
 
 		if (!$this->owner->RootFolderID) {
 			//get path to parent folder
-			//@todo: check if $this->owner has Hierarchy extension
-			$parent = $this->owner->getParent();
+			$parent = $this->owner->hasExtension('Hierarchy')
+				? $this->owner->getParent()
+				: null;
 			if (is_a($parent, 'Page') && $parentFolder = $parent->RootFolder()) {
 				$folderRoot = $parentFolder->getRelativePath();
 				$folderRoot = str_replace(ASSETS_DIR . '/', '', $folderRoot);
@@ -83,6 +84,7 @@ class RootFolder extends DataExtension
 			$folder->write();
 
 			$this->owner->RootFolderID = $folder->ID;
+			$this->owner->write();
 		} else {
 			if ($this->owner->isChanged('URLSegment')) {
 //				$this->owner->RootFolder()->Title = $this->owner->Title;
