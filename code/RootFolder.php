@@ -103,4 +103,24 @@ class RootFolder extends DataExtension
 			? $this->owner->config()->get('folder_root')
 			: Config::inst()->get($this->class, 'folder_root');
 	}
+
+	/**
+	 * Helper function to return the name of the RootFolder for setting in @link UploadField or @link GridFieldBulkUpload
+	 * By default relative to /assets/
+	 *
+	 * @param bool $relativeToAssetsDir
+	 */
+	public function getRootFolderName($relativeToAssetsDir = true){
+		if ($this->owner->RootFolderID) {
+			return $relativeToAssetsDir
+				? str_replace(ASSETS_DIR . '/' , '', $this->owner->RootFolder()->getRelativePath())
+				: $this->owner->RootFolder()->getRelativePath();
+
+		} else {
+			//use folder root as fallback for now
+			return $this->getFolderRoot();
+		}
+
+	}
+
 }
