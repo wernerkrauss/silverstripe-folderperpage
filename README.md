@@ -48,7 +48,7 @@ function getCMSFields() {
     $pic = UploadField::create('Avatar', 'Your Avatar');
     $fields->addFieldToTab('Root.Main', $pic);
 
-    $pic->setFolderName($this->getRootFolderName()');
+    $pic->setFolderName($this->getRootFolderName());
     /*...*/
 }
 ```
