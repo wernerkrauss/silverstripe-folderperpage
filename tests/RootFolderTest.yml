@@ -1,0 +1,10 @@
+Page:
+  page1:
+    Title: 'page1'
+  page2:
+    Title: 'page2'
+  parentpage:
+    Title: 'Parent'
+  subpage:
+    Title: 'SubPage'
+    Parent: =>Page.parentpage
