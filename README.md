@@ -53,11 +53,11 @@ function getCMSFields() {
 }
 ```
 
-
 ## TODO
-* make it work for other dataobjects
-* unit tests
+* ~~make it work for other dataobjects~~
+* ~~unit tests~~
 * add function that automatically updates all UploadFields and BulkUploads to use this folder in a form
 * add support for subsites module, e.g. a master root per subsite
 * task for updating / checking all existing pages
-* check if page is moved
+* ~~check if page is moved~~
+  * should it move the rootfolder automatically or by switch? May be a timeout problem with very large trees
