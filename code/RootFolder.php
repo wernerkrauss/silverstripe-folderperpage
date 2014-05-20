@@ -67,8 +67,7 @@ class RootFolder extends DataExtension
 				? $this->owner->getParent()
 				: null;
 			if (is_a($parent, 'Page') && $parentFolder = $parent->RootFolder()) {
-				$folderRoot = $parentFolder->getRelativePath();
-				$folderRoot = str_replace(ASSETS_DIR . '/', '', $folderRoot);
+				$folderRoot = $parent->getRootFolderName();
 			} else {
 				//fallback to classes folder_root which is defined in your config.yml
 				$folderRoot = $this->getFolderRoot() . '/';
