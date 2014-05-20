@@ -60,38 +60,64 @@ class RootFolder extends DataExtension
 			return;
 		}
 
-
 		if (!$this->owner->RootFolderID) {
-			//get path to parent folder
-			$parent = $this->owner->hasExtension('Hierarchy')
-				? $this->owner->getParent()
-				: null;
-			if (is_a($parent, 'Page') && $parentFolder = $parent->RootFolder()) {
-				$folderRoot = $parent->getRootFolderName();
-			} else {
-				//fallback to classes folder_root which is defined in your config.yml
-				$folderRoot = $this->getFolderRoot() . '/';
-			}
-
-			if ($folderRoot == '/') {
-				$folderRoot = getFolderRoot() . '/';
-			}
-
-			$folder = Folder::find_or_make($folderRoot . $this->owner->URLSegment);
-			$folder->Title = $this->owner->Title;
-			$folder->setName($this->owner->URLSegment);
-			$folder->write();
-
-			$this->owner->RootFolderID = $folder->ID;
-			$this->owner->write();
+			$this->createRootFolder();
 		} else {
-			if ($this->owner->isChanged('URLSegment')) {
-//				$this->owner->RootFolder()->Title = $this->owner->Title;
-				$this->owner->RootFolder()->setName($this->owner->URLSegment);
-				$this->owner->RootFolder()->write();
-			}
+			$this->updateRootFolder();
+		}
+	}
+
+	/**
+	 * Does the work of creating a new RootFolder, saves the relation in the extended DataObject
+	 */
+	protected function createRootFolder()
+	{
+		//get path to parent folder
+		$parent = $this->owner->hasExtension('Hierarchy')
+			? $this->owner->getParent()
+			: null;
+		if (is_a($parent, 'Page') && $parentFolder = $parent->RootFolder()) {
+			$folderRoot = $parent->getRootFolderName();
+		} else {
+			//fallback to classes folder_root which is defined in your config.yml
+			$folderRoot = $this->getFolderRoot() . '/';
 		}
 
+		if ($folderRoot == '/') {
+			$folderRoot = getFolderRoot() . '/';
+		}
+
+		$folder = Folder::find_or_make($folderRoot . $this->owner->URLSegment);
+		$folder->Title = $this->owner->Title;
+		$folder->setName($this->owner->URLSegment);
+		$folder->write();
+
+		$this->owner->RootFolderID = $folder->ID;
+		$this->owner->write();
+	}
+
+	/**
+	 * Does the work of updating the folder if the URLSegment or ParentID is changed.
+	 * if both it does two writes...
+	 *
+	 * @todo: rethink moving subfolders as it may timeout on real large trees
+	 */
+	protected function updateRootFolder()
+	{
+		$rootFolder = $this->owner->RootFolder();
+		if ($this->owner->isChanged('URLSegment') && $this->owner->URLSegment) {
+			$rootFolder->setName($this->owner->URLSegment);
+			$rootFolder->write();
+		}
+
+		if ($this->owner->isChanged('ParentID') && $this->owner->ParentID > 0) {
+			$oldParentID = $rootFolder->ParentID;
+			$newParentID = $this->owner->Parent()->RootFolderID;
+			if ($oldParentID !== $newParentID && $newParentID !== $rootFolder->ID) {
+				$rootFolder->setParentID($newParentID);
+				$rootFolder->write();
+			}
+		}
 	}
 
 	/**
@@ -107,16 +133,18 @@ class RootFolder extends DataExtension
 			: Config::inst()->get($this->class, 'folder_root');
 	}
 
+
 	/**
 	 * Helper function to return the name of the RootFolder for setting in @link UploadField or @link GridFieldBulkUpload
 	 * By default relative to /assets/
 	 *
 	 * @param bool $relativeToAssetsDir
 	 */
-	public function getRootFolderName($relativeToAssetsDir = true){
+	public function getRootFolderName($relativeToAssetsDir = true)
+	{
 		if ($this->owner->RootFolderID) {
 			return $relativeToAssetsDir
-				? str_replace(ASSETS_DIR . '/' , '', $this->owner->RootFolder()->getRelativePath())
+				? str_replace(ASSETS_DIR . '/', '', $this->owner->RootFolder()->getRelativePath())
 				: $this->owner->RootFolder()->getRelativePath();
 
 		} else {
