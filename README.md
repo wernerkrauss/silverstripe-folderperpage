@@ -1,6 +1,8 @@
 silverstripe-folderperpage
 ==========================
 
+[![Build Status](https://travis-ci.org/wernerkrauss/silverstripe-folderperpage.svg?branch=master)](https://travis-ci.org/wernerkrauss/silverstripe-folderperpage)
+
 Extension that creates a folder per page or dataobject
 
 ## Requirements
