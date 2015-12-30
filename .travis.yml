@@ -23,6 +23,9 @@ matrix:
   allow_failures:
     - php: 7.0
 
+before_install:
+  - pip install --user codecov
+
 before_script:
   - composer self-update || true
   - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
@@ -31,4 +34,14 @@ before_script:
   - composer install
 
 script:
-  - vendor/bin/phpunit folderperpage/tests
+  - vendor/bin/phpunit --coverage-clover=coverage.clover folderperpage/tests
+
+after_success:
+    - mv coverage.clover ~/build/$TRAVIS_REPO_SLUG/
+    - cd ~/build/$TRAVIS_REPO_SLUG
+
+    # Upload Coverage to Scrutinizer
+    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+    # Upload test coverage to codecov
+    - codecov
