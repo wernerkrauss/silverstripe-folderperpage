@@ -136,4 +136,31 @@ class RootFolderTest extends SapphireTest
             'ASSETS_DIR should be at the beginning of getRootFolderName(false)'
         );
     }
+
+    /**
+     * Check if a duplicated page has a new folder applied
+     */
+    public function testDuplicatePage()
+    {
+        $page = $this->objFromFixture('Page', 'page1');
+
+        $duplicatedPage = $page->duplicate(true);
+
+        //we have to re-load the duplicated page, cause the RootFolder is set in onAfterWrite and the current
+        //object is not aware of it
+
+        $duplicatedPage = Page::get()->byID($duplicatedPage->ID);
+
+        $this->assertNotEquals(
+            $page->URLSegment,
+            $duplicatedPage->URLSegment,
+            'The duplicated page must not have the same urlsegment'
+        );
+        $this->assertNotEquals(
+            $page->RootFolderID,
+            $duplicatedPage->RootFolderID,
+            'The duplicated page must not have the same root folder'
+        );
+    }
+
 }

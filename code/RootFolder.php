@@ -36,6 +36,16 @@ class RootFolder extends DataExtension
     }
 
     /**
+     * reset $RootFolderID on a duplicated page
+     */
+    public function onBeforeDuplicate($originalOrClone)
+    {
+        if ($this->owner->ID == 0) {
+            $this->owner->RootFolderID = 0;
+        }
+    }
+
+    /**
      * Creates a folder for a page as a subfolder of the parent page
      * You can exclude page types by setting $ignored_classes in config
      *
