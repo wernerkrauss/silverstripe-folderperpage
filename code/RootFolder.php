@@ -28,11 +28,20 @@ class RootFolder extends DataExtension
      */
     private static $folder_root = 'Articles';
 
+    /**
+     * create folder and set relation
+     */
+    public function onBeforeWrite()
+    {
+            $this->checkFolder();
+    }
+
+    /**
+     * check updates and rename folder if needed
+     */
     public function onAfterWrite()
     {
-        if ($this->owner->ID) {
             $this->checkFolder();
-        }
     }
 
     /**
@@ -97,13 +106,12 @@ class RootFolder extends DataExtension
             $folderRoot = getFolderRoot() . '/';
         }
 
-        $folder = Folder::find_or_make($folderRoot . $this->owner->URLSegment);
+        $folder = Folder::find_or_make($folderRoot . $this->getOrCreateURLSegment());
         $folder->Title = $this->owner->Title;
         $folder->setName($this->owner->URLSegment);
         $folder->write();
 
         $this->owner->RootFolderID = $folder->ID;
-        $this->owner->write();
     }
 
     /**
@@ -161,4 +169,40 @@ class RootFolder extends DataExtension
             return $this->getFolderRoot();
         }
     }
+
+    /**
+     * code taken from SiteTree::onBeforeWrite()
+     *
+     * we need $URLSegment already created and checked before there
+     *
+     * @return mixed
+     */
+    private function getOrCreateURLSegment()
+    {
+        // If there is no URLSegment set, generate one from Title
+        if ((!$this->owner->URLSegment || $this->owner->URLSegment == 'new-page') && $this->owner->Title) {
+            $this->owner->URLSegment = $this->owner->generateURLSegment($this->owner->Title);
+        } else {
+            if ($this->owner->isChanged('URLSegment', 2)) {
+                // Do a strict check on change level, to avoid double encoding caused by
+                // bogus changes through forceChange()
+                $filter = URLSegmentFilter::create();
+                $this->owner->URLSegment = $filter->filter($this->owner->URLSegment);
+                // If after sanitising there is no URLSegment, give it a reasonable default
+                if (!$this->owner->URLSegment) {
+                    $this->owner->URLSegment = "page-$this->owner->ID";
+                }
+            }
+        }
+
+        // Ensure that this object has a non-conflicting URLSegment value.
+        $count = 2;
+        while (!$this->owner->validURLSegment()) {
+            $this->owner->URLSegment = preg_replace('/-[0-9]+$/', null, $this->owner->URLSegment) . '-' . $count;
+            $count++;
+        }
+
+        return $this->owner->URLSegment;
+    }
 }
+
