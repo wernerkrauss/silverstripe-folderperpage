@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2015-12-31
+## Changed
+ - Move generation of new folder to onBeforeWrite(), fixes issues on SS 3.2
+ - Travis now builds for SS 3.2
+
 ## [0.2.0] - 2015-12-31
 ### Changed
  - Switch to PSR-2 (Helpful Robot)
