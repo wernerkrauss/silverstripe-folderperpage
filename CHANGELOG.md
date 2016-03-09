@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.2] - 2016-03-09
+## Changed
+ - Travis now builds for SS 3.3
+ - Fixed a bug when a new folder was not created properly on duplication of a page (the old folder was taken and renamed on filesystem)
+
 ## [0.2.1] - 2015-12-31
 ## Changed
  - Move generation of new folder to onBeforeWrite(), fixes issues on SS 3.2
