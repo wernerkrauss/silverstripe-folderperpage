@@ -33,7 +33,7 @@ class RootFolder extends DataExtension
      */
     public function onBeforeWrite()
     {
-            $this->checkFolder();
+        $this->checkFolder();
     }
 
     /**
@@ -41,7 +41,7 @@ class RootFolder extends DataExtension
      */
     public function onAfterWrite()
     {
-            $this->checkFolder();
+        $this->checkFolder();
     }
 
     /**
@@ -183,7 +183,7 @@ class RootFolder extends DataExtension
         if ((!$this->owner->URLSegment || $this->owner->URLSegment == 'new-page') && $this->owner->Title) {
             $this->owner->URLSegment = $this->owner->generateURLSegment($this->owner->Title);
         } else {
-            if ($this->owner->isChanged('URLSegment', 2)) {
+            if (!$this->owner->isInDB || $this->owner->isChanged('URLSegment', 2)) {
                 // Do a strict check on change level, to avoid double encoding caused by
                 // bogus changes through forceChange()
                 $filter = URLSegmentFilter::create();

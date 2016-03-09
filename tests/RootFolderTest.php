@@ -144,6 +144,9 @@ class RootFolderTest extends SapphireTest
     {
         $page = $this->objFromFixture('Page', 'page1');
 
+        $this->assertFileExists($page->RootFolder()->getFullPath(),
+            'root folder of original page should exist on file system');
+
         $duplicatedPage = $page->duplicate(true);
 
         //we have to re-load the duplicated page, cause the RootFolder is set in onAfterWrite and the current
@@ -161,6 +164,12 @@ class RootFolderTest extends SapphireTest
             $duplicatedPage->RootFolderID,
             'The duplicated page must not have the same root folder'
         );
+
+        $this->assertFileExists($page->RootFolder()->getFullPath(),
+            'root folder of original page should still exist on file system after duplication');
+        $this->assertFileExists($duplicatedPage->RootFolder()->getFullPath(),
+            'root folder of duplicated page should exist on file system');
+
     }
 
 }
