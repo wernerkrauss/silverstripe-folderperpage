@@ -4,6 +4,7 @@ silverstripe-folderperpage
 [![Build Status](https://travis-ci.org/wernerkrauss/silverstripe-folderperpage.svg?branch=master)](https://travis-ci.org/wernerkrauss/silverstripe-folderperpage)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/wernerkrauss/silverstripe-folderperpage/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/wernerkrauss/silverstripe-folderperpage/?branch=master)
 [![codecov.io](https://codecov.io/github/wernerkrauss/silverstripe-folderperpage/coverage.svg?branch=master)](https://codecov.io/github/wernerkrauss/silverstripe-folderperpage?branch=master)
+![helpfulrobot](https://helpfulrobot.io/wernerkrauss/folderperpage/badge)
 
 Extension that creates a folder per page or dataobject
 
