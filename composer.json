@@ -16,11 +16,7 @@
 		"issues": "https://github.com/wernerkrauss/silverstripe-folderperpage/issues"
 	},
 	"require": {
-		"silverstripe/framework": "3.*",
-		"silverstripe/cms": "3.*",
-		"composer/installers": "*"
-	},
-	"suggest": {
+		"silverstripe/cms": "^3.1"
 	},
 	"extra": {
 		"installer-name": "folderperpage"
