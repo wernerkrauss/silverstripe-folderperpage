@@ -216,10 +216,10 @@ class RootFolder extends DataExtension
                 ? $this->owner->RootFolder()->getFilename()
                 : implode('/', [ASSETS_DIR, $this->owner->RootFolder()->getFilename()]);
 
-        } else {
-            //use folder root as fallback for now
-            return $this->getFolderRoot();
         }
+
+        //use folder root as fallback for now
+        return $this->getFolderRoot();
     }
 }
 
