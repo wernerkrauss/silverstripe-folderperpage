@@ -1,15 +1,16 @@
 ---
 Name: folderperpage
-After: 'framework/*','cms/*'
+After: 'framework/*, cms/*'
 ---
 
-RootFolder:
+NetWerkstatt\FolderPerPage\RootFolder:
   ignored_classes:
-    ['VirtualPage', 'ErrorPage']
+    - SilverStripe\CMS\Model\VirtualPage
+    - SilverStripe\ErrorPage\ErrorPage
   create_folder_for_translations: false
   folder_root: 'Articles'
 
 
 Page:
   extensions:
-    ['RootFolder']
+    - NetWerkstatt\FolderPerPage\RootFolder

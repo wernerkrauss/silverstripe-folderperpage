@@ -1,5 +1,18 @@
 <?php
 
+namespace NetWerkstatt\FolderPerPage;
+
+
+use SilverStripe\Assets\Folder;
+use SilverStripe\CMS\Model\VirtualPage;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\ErrorPage\ErrorPage;
+use SilverStripe\ORM\DataExtension;
+use SilverStripe\ORM\Hierarchy\Hierarchy;
+use SilverStripe\View\Parsers\URLSegmentFilter;
+use Translatable;
+
+
 /**
  * Adds a RootFolder to a Page for using it as default upload folder for all related stuff.
  *
@@ -9,14 +22,18 @@
  */
 class RootFolder extends DataExtension
 {
-    private static $has_one = array(
-        'RootFolder' => 'Folder',
-    );
+    private static $has_one = [
+        'RootFolder' => Folder::class,
+    ];
+
+    private static $owns = [
+        'RootFolder'
+    ];
 
     /**
      * @var array exclude this page types and class names
      */
-    private static $ignored_classes = array('VirtualPage', 'ErrorPage');
+    private static $ignored_classes = [VirtualPage::class, ErrorPage::class];
 
     /**
      * @var bool should folders be created for translated objects?
@@ -37,24 +54,6 @@ class RootFolder extends DataExtension
     }
 
     /**
-     * check updates and rename folder if needed
-     */
-    public function onAfterWrite()
-    {
-        $this->checkFolder();
-    }
-
-    /**
-     * reset $RootFolderID on a duplicated page
-     */
-    public function onBeforeDuplicate($originalOrClone)
-    {
-        if ($this->owner->ID == 0) {
-            $this->owner->RootFolderID = 0;
-        }
-    }
-
-    /**
      * Creates a folder for a page as a subfolder of the parent page
      * You can exclude page types by setting $ignored_classes in config
      *
@@ -64,7 +63,7 @@ class RootFolder extends DataExtension
      */
     public function checkFolder()
     {
-        $ignoredPageTypes = Config::inst()->get($this->class, 'ignored_classes');
+        $ignoredPageTypes = Config::inst()->get(self::class, 'ignored_classes');
 
         foreach ($ignoredPageTypes as $pagetype) {
             if (is_a($this->owner, $pagetype)) {
@@ -74,7 +73,7 @@ class RootFolder extends DataExtension
 
         if (class_exists('Translatable')
             && $this->owner->Locale !== Translatable::default_locale()
-            && !Config::inst()->get($this->class, 'create_folder_for_translations')
+            && !Config::inst()->get(self::class, 'create_folder_for_translations')
         ) {
             return;
         }
@@ -92,7 +91,7 @@ class RootFolder extends DataExtension
     protected function createRootFolder()
     {
         //get path to parent folder
-        $parent = $this->owner->hasExtension('Hierarchy')
+        $parent = $this->owner->hasExtension(Hierarchy::class)
             ? $this->owner->getParent()
             : null;
         if (is_a($parent, 'Page') && $parentFolder = $parent->RootFolder()) {
@@ -108,34 +107,10 @@ class RootFolder extends DataExtension
 
         $folder = Folder::find_or_make($folderRoot . $this->getOrCreateURLSegment());
         $folder->Title = $this->owner->Title;
-        $folder->setName($this->owner->URLSegment);
+        $folder->setTitle($this->owner->URLSegment);
         $folder->write();
 
         $this->owner->RootFolderID = $folder->ID;
-    }
-
-    /**
-     * Does the work of updating the folder if the URLSegment or ParentID is changed.
-     * if both it does two writes...
-     *
-     * @todo: rethink moving subfolders as it may timeout on real large trees
-     */
-    protected function updateRootFolder()
-    {
-        $rootFolder = $this->owner->RootFolder();
-        if ($this->owner->isChanged('URLSegment') && $this->owner->URLSegment) {
-            $rootFolder->setName($this->owner->URLSegment);
-            $rootFolder->write();
-        }
-
-        if ($this->owner->isChanged('ParentID') && $this->owner->ParentID > 0) {
-            $oldParentID = $rootFolder->ParentID;
-            $newParentID = $this->owner->Parent()->RootFolderID;
-            if ($oldParentID !== $newParentID && $newParentID !== $rootFolder->ID) {
-                $rootFolder->setParentID($newParentID);
-                $rootFolder->write();
-            }
-        }
     }
 
     /**
@@ -148,26 +123,7 @@ class RootFolder extends DataExtension
     {
         return ($this->owner->config()->get('folder_root'))
             ? $this->owner->config()->get('folder_root')
-            : Config::inst()->get($this->class, 'folder_root');
-    }
-
-
-    /**
-     * Helper function to return the name of the RootFolder for setting in @link UploadField or @link GridFieldBulkUpload
-     * By default relative to /assets/
-     *
-     * @param bool $relativeToAssetsDir
-     */
-    public function getRootFolderName($relativeToAssetsDir = true)
-    {
-        if ($this->owner->RootFolderID) {
-            return $relativeToAssetsDir
-                ? str_replace(ASSETS_DIR . '/', '', $this->owner->RootFolder()->getRelativePath())
-                : $this->owner->RootFolder()->getRelativePath();
-        } else {
-            //use folder root as fallback for now
-            return $this->getFolderRoot();
-        }
+            : Config::inst()->get(self::class, 'folder_root');
     }
 
     /**
@@ -203,6 +159,67 @@ class RootFolder extends DataExtension
         }
 
         return $this->owner->URLSegment;
+    }
+
+    /**
+     * Does the work of updating the folder if the URLSegment or ParentID is changed.
+     * if both it does two writes...
+     *
+     * @todo: rethink moving subfolders as it may timeout on real large trees
+     */
+    protected function updateRootFolder()
+    {
+        $rootFolder = $this->owner->RootFolder();
+        if ($this->owner->isChanged('URLSegment') && $this->owner->URLSegment) {
+            $rootFolder->setTitle($this->owner->URLSegment);
+            $rootFolder->write();
+        }
+
+        if ($this->owner->isChanged('ParentID') && $this->owner->ParentID > 0) {
+            $oldParentID = $rootFolder->ParentID;
+            $newParentID = $this->owner->Parent()->RootFolderID;
+            if ($oldParentID !== $newParentID && $newParentID !== $rootFolder->ID) {
+                $rootFolder->ParentID = $newParentID;
+                $rootFolder->write();
+            }
+        }
+    }
+
+    /**
+     * check updates and rename folder if needed
+     */
+    public function onAfterWrite()
+    {
+        $this->checkFolder();
+    }
+
+    /**
+     * reset $RootFolderID on a duplicated page
+     */
+    public function onBeforeDuplicate($originalOrClone)
+    {
+        if ($this->owner->ID == 0) {
+            $this->owner->RootFolderID = 0;
+        }
+    }
+
+    /**
+     * Helper function to return the name of the RootFolder for setting in @link UploadField or @link GridFieldBulkUpload
+     * By default relative to /assets/
+     *
+     * @param bool $relativeToAssetsDir
+     */
+    public function getRootFolderName($relativeToAssetsDir = true)
+    {
+        if ($this->owner->RootFolderID) {
+            return $relativeToAssetsDir
+                ? $this->owner->RootFolder()->getFilename()
+                : implode('/', [ASSETS_DIR, $this->owner->RootFolder()->getFilename()]);
+
+        } else {
+            //use folder root as fallback for now
+            return $this->getFolderRoot();
+        }
     }
 }
 

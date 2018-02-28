@@ -1,5 +1,17 @@
 <?php
 
+namespace NetWerkstatt\FolderPerPage\Tests;
+
+
+use Page;
+
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use NetWerkstatt\FolderPerPage\RootFolder;
+use SilverStripe\Dev\SapphireTest;
+
+
+
 /**
  * Tests for RootFolder extension
  */
@@ -25,13 +37,20 @@ class RootFolderTest extends SapphireTest
         $folder = $page->RootFolder();
 
         $this->assertEquals($page->URLSegment, $folder->Name, 'Page URLSegment and Folder Title should be the same');
-        $path = ASSETS_DIR . '/' . $root = Config::inst()->get('RootFolder', 'folder_root') . '/'
+        $path = $root = Config::inst()->get(RootFolder::class, 'folder_root') . '/'
                 . $page->URLSegment . '/';
 
         $this->assertEquals(
-            $path,
-            $folder->getRelativePath(),
-            'folder path should be assets/Articles/' . $page->URLSegment
+            'create-page-test',
+            $folder->getTitle(),
+            'folder should be named "create-page-test"'
+        );
+
+        $parentFolder = $folder->Parent();
+        $this->assertEquals(
+            Config::inst()->get(RootFolder::class, 'folder_root'),
+            $parentFolder->getTitle(),
+            'parent folder should be folder_root config'
         );
     }
 
@@ -43,13 +62,13 @@ class RootFolderTest extends SapphireTest
         $page1 = $this->objFromFixture('Page', 'page1');
         $folder = $page1->RootFolder();
 
-        $this->assertEquals($page1->URLSegment, $folder->Name, 'Page URLSegment and Folder Title should be the same');
+        $this->assertEquals($page1->URLSegment, $folder->getTitle(), 'Page URLSegment and Folder Title should be the same');
 
         $page1->URLSegment = ('updatedpage');
         $page1->write();
 
         $folder = $page1->RootFolder(); //reload folder after saving
-        $this->assertEquals('updatedpage', $folder->Name, 'Folder name should be updated after saving a page');
+        $this->assertEquals('updatedpage', $folder->getTitle(), 'Folder name should be updated after saving a page');
         $this->assertEquals(
             $page1->URLSegment,
             $folder->Name,
@@ -62,7 +81,7 @@ class RootFolderTest extends SapphireTest
      */
     public function testIgnoredPageTypes()
     {
-        $ignoredPageTypes = Config::inst()->get('RootFolder', 'ignored_classes');
+        $ignoredPageTypes = Config::inst()->get(RootFolder::class, 'ignored_classes');
 
         foreach ($ignoredPageTypes as $type) {
             $page = $type::create();
@@ -123,7 +142,7 @@ class RootFolderTest extends SapphireTest
             'FolderName should be at the end of getRootFolderName()'
         );
 
-        $root = Config::inst()->get('RootFolder', 'folder_root');
+        $root = Config::inst()->get(RootFolder::class, 'folder_root');
         $this->assertStringStartsWith(
             $root . '/' . $parent->RootFolder()->Name,
             $child->getRootFolderName(),
@@ -144,8 +163,8 @@ class RootFolderTest extends SapphireTest
     {
         $page = $this->objFromFixture('Page', 'page1');
 
-        $this->assertFileExists($page->RootFolder()->getFullPath(),
-            'root folder of original page should exist on file system');
+//        $this->assertFileExists($page->RootFolder()->getFullPath(),
+//            'root folder of original page should exist on file system');
 
         $duplicatedPage = $page->duplicate(true);
 
@@ -165,10 +184,10 @@ class RootFolderTest extends SapphireTest
             'The duplicated page must not have the same root folder'
         );
 
-        $this->assertFileExists($page->RootFolder()->getFullPath(),
-            'root folder of original page should still exist on file system after duplication');
-        $this->assertFileExists($duplicatedPage->RootFolder()->getFullPath(),
-            'root folder of duplicated page should exist on file system');
+//        $this->assertFileExists($page->RootFolder()->getFullPath(),
+//            'root folder of original page should still exist on file system after duplication');
+//        $this->assertFileExists($duplicatedPage->RootFolder()->getFullPath(),
+//            'root folder of duplicated page should exist on file system');
 
     }
 
