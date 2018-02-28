@@ -1,7 +1,7 @@
 {
     "name": "wernerkrauss/folderperpage",
     "description": "An extension for automatically creating a folder per page",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
         "extension"
@@ -26,6 +26,12 @@
     "require-dev": {
         "phpunit/PHPUnit": "^5.7",
         "squizlabs/php_codesniffer": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "NetWerkstatt\\FolderPerPage\\": "src/",
+            "NetWerkstatt\\FolderPerPage\\Tests\\": "tests/"
+        }
     },
     "extra": {
         "installer-name": "folderperpage"
