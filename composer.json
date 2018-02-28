@@ -1,24 +1,39 @@
 {
-	"name": "wernerkrauss/folderperpage",
-	"description": "An extension for automatically creating a folder per page",
-	"type": "silverstripe-module",
-	"keywords": ["silverstripe", "extension"],
-	"license": "MIT",
-	"authors": [
-	{
-		"name": "Werner Krauß",
-		"email": "werner.krauss@netwerkstatt.at",
-		"homepage": "http://www.netwerkstatt.at",
-		"role": "Developer"
-	}
-	],
-	"support": {
-		"issues": "https://github.com/wernerkrauss/silverstripe-folderperpage/issues"
-	},
-	"require": {
-		"silverstripe/cms": "^4.0"
-	},
-	"extra": {
-		"installer-name": "folderperpage"
-	}
+    "name": "wernerkrauss/folderperpage",
+    "description": "An extension for automatically creating a folder per page",
+    "type": "silverstripe-module",
+    "keywords": [
+        "silverstripe",
+        "extension"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Werner Krauß",
+            "email": "werner.krauss@netwerkstatt.at",
+            "homepage": "http://www.netwerkstatt.at",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/wernerkrauss/silverstripe-folderperpage/issues"
+    },
+    "require": {
+        "php": ">=7.0.0",
+        "silverstripe/cms": "^4.0",
+        "silverstripe/assets": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/PHPUnit": "^5.7",
+        "squizlabs/php_codesniffer": "*"
+    },
+    "extra": {
+        "installer-name": "folderperpage"
+    },
+    "scripts": {
+        "lint": "vendor/bin/phpcs src/ tests/",
+        "lint-clean": "vendor/bin/phpcbf src/ tests/"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

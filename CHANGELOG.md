@@ -4,6 +4,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
  - Upgrade code to SilverStripe4
+ - Bump minimum PHP Version to 7.0.0
+ - Updated Travis config
 
 ## [0.2.2] - 2016-03-09
 ## Changed
