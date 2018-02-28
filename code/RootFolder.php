@@ -47,6 +47,7 @@ class RootFolder extends DataExtension
 
     /**
      * create folder and set relation
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function onBeforeWrite()
     {
@@ -60,6 +61,7 @@ class RootFolder extends DataExtension
      * Doesn't create folders for translated pages by default.
      *
      * @TODO doesn't check if page is moved to another parent
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function checkFolder()
     {
@@ -87,6 +89,7 @@ class RootFolder extends DataExtension
 
     /**
      * Does the work of creating a new RootFolder, saves the relation in the extended DataObject
+     * @throws \SilverStripe\ORM\ValidationException
      */
     protected function createRootFolder()
     {
@@ -101,8 +104,8 @@ class RootFolder extends DataExtension
             $folderRoot = $this->getFolderRoot() . '/';
         }
 
-        if ($folderRoot == '/') {
-            $folderRoot = getFolderRoot() . '/';
+        if ($folderRoot === '/') {
+            $folderRoot = $this->getFolderRoot() . '/';
         }
 
         $folder = Folder::find_or_make($folderRoot . $this->getOrCreateURLSegment());
@@ -121,9 +124,8 @@ class RootFolder extends DataExtension
      */
     public function getFolderRoot()
     {
-        return ($this->owner->config()->get('folder_root'))
-            ? $this->owner->config()->get('folder_root')
-            : Config::inst()->get(self::class, 'folder_root');
+        return $this->owner::config()->get('folder_root')
+            ?: Config::inst()->get(self::class, 'folder_root');
     }
 
     /**
@@ -136,7 +138,7 @@ class RootFolder extends DataExtension
     private function getOrCreateURLSegment()
     {
         // If there is no URLSegment set, generate one from Title
-        if ((!$this->owner->URLSegment || $this->owner->URLSegment == 'new-page') && $this->owner->Title) {
+        if ((!$this->owner->URLSegment || $this->owner->URLSegment === 'new-page') && $this->owner->Title) {
             $this->owner->URLSegment = $this->owner->generateURLSegment($this->owner->Title);
         } else {
             if (!$this->owner->isInDB || $this->owner->isChanged('URLSegment', 2)) {
@@ -170,12 +172,12 @@ class RootFolder extends DataExtension
     protected function updateRootFolder()
     {
         $rootFolder = $this->owner->RootFolder();
-        if ($this->owner->isChanged('URLSegment') && $this->owner->URLSegment) {
+        if ($this->owner->URLSegment && $this->owner->isChanged('URLSegment')) {
             $rootFolder->setTitle($this->owner->URLSegment);
             $rootFolder->write();
         }
 
-        if ($this->owner->isChanged('ParentID') && $this->owner->ParentID > 0) {
+        if ($this->owner->ParentID > 0 && $this->owner->isChanged('ParentID')) {
             $oldParentID = $rootFolder->ParentID;
             $newParentID = $this->owner->Parent()->RootFolderID;
             if ($oldParentID !== $newParentID && $newParentID !== $rootFolder->ID) {
@@ -187,6 +189,7 @@ class RootFolder extends DataExtension
 
     /**
      * check updates and rename folder if needed
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function onAfterWrite()
     {
@@ -195,6 +198,7 @@ class RootFolder extends DataExtension
 
     /**
      * reset $RootFolderID on a duplicated page
+     * @param $originalOrClone
      */
     public function onBeforeDuplicate($originalOrClone)
     {
@@ -208,6 +212,7 @@ class RootFolder extends DataExtension
      * By default relative to /assets/
      *
      * @param bool $relativeToAssetsDir
+     * @return mixed|string
      */
     public function getRootFolderName($relativeToAssetsDir = true)
     {

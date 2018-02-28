@@ -64,7 +64,7 @@ class RootFolderTest extends SapphireTest
 
         $this->assertEquals($page1->URLSegment, $folder->getTitle(), 'Page URLSegment and Folder Title should be the same');
 
-        $page1->URLSegment = ('updatedpage');
+        $page1->URLSegment = 'updatedpage';
         $page1->write();
 
         $folder = $page1->RootFolder(); //reload folder after saving
