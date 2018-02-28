@@ -3,7 +3,7 @@ Name: folderperpage
 After: 'framework/*, cms/*'
 ---
 
-NetWerkstatt\FolderPerPage\RootFolder:
+NetWerkstatt\FolderPerPage\Extensions\RootFolder:
   ignored_classes:
     - SilverStripe\CMS\Model\VirtualPage
     - SilverStripe\ErrorPage\ErrorPage
@@ -13,4 +13,4 @@ NetWerkstatt\FolderPerPage\RootFolder:
 
 Page:
   extensions:
-    - NetWerkstatt\FolderPerPage\RootFolder
+    - NetWerkstatt\FolderPerPage\Extensions\RootFolder

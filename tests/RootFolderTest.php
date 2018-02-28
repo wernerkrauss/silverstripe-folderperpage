@@ -2,15 +2,10 @@
 
 namespace NetWerkstatt\FolderPerPage\Tests;
 
-
 use Page;
-
-use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
-use NetWerkstatt\FolderPerPage\RootFolder;
+use NetWerkstatt\FolderPerPage\Extensions\RootFolder;
 use SilverStripe\Dev\SapphireTest;
-
-
 
 /**
  * Tests for RootFolder extension
@@ -62,7 +57,11 @@ class RootFolderTest extends SapphireTest
         $page1 = $this->objFromFixture('Page', 'page1');
         $folder = $page1->RootFolder();
 
-        $this->assertEquals($page1->URLSegment, $folder->getTitle(), 'Page URLSegment and Folder Title should be the same');
+        $this->assertEquals(
+            $page1->URLSegment,
+            $folder->getTitle(),
+            'Page URLSegment and Folder Title should be the same'
+        );
 
         $page1->URLSegment = 'updatedpage';
         $page1->write();
@@ -188,7 +187,5 @@ class RootFolderTest extends SapphireTest
 //            'root folder of original page should still exist on file system after duplication');
 //        $this->assertFileExists($duplicatedPage->RootFolder()->getFullPath(),
 //            'root folder of duplicated page should exist on file system');
-
     }
-
 }

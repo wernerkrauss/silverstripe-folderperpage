@@ -1,7 +1,6 @@
 <?php
 
-namespace NetWerkstatt\FolderPerPage;
-
+namespace NetWerkstatt\FolderPerPage\Extensions;
 
 use SilverStripe\Assets\Folder;
 use SilverStripe\CMS\Model\VirtualPage;
@@ -11,7 +10,6 @@ use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\Hierarchy\Hierarchy;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 use Translatable;
-
 
 /**
  * Adds a RootFolder to a Page for using it as default upload folder for all related stuff.
@@ -208,7 +206,8 @@ class RootFolder extends DataExtension
     }
 
     /**
-     * Helper function to return the name of the RootFolder for setting in @link UploadField or @link GridFieldBulkUpload
+     * Helper function to return the name of the RootFolder for setting in @link UploadField
+     * or @link GridFieldBulkUpload
      * By default relative to /assets/
      *
      * @param bool $relativeToAssetsDir
@@ -220,11 +219,9 @@ class RootFolder extends DataExtension
             return $relativeToAssetsDir
                 ? $this->owner->RootFolder()->getFilename()
                 : implode('/', [ASSETS_DIR, $this->owner->RootFolder()->getFilename()]);
-
         }
 
         //use folder root as fallback for now
         return $this->getFolderRoot();
     }
 }
-
