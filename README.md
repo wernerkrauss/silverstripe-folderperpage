@@ -10,8 +10,10 @@ Extension that creates a folder per page or dataobject
 
 ## Requirements
 
-* [`Silverstripe 3.1.* framework`](https://github.com/silverstripe/silverstripe-framework)
-* [`Silverstripe 3.1.* CMS`](https://github.com/silverstripe/cms)
+* [`Silverstripe ^4.0 framework`](https://github.com/silverstripe/silverstripe-framework)
+* [`Silverstripe ^4.0 CMS`](https://github.com/silverstripe/cms)
+
+for SS3 compatible versions see [SS3 branch](https://github.com/wernerkrauss/silverstripe-folderperpage/tree/ss3)
 
 ## Installation
 
@@ -23,7 +25,7 @@ Pages:
 ```yml
 Page:
   extensions:
-    ['RootFolder']
+    - NetWerkstatt\FolderPerPage\Extensions\RootFolder
 ```
 ## Configuration
 
@@ -31,11 +33,13 @@ You can exclude several page types. Just use the RootFolder.ignored_classes conf
 some default values to get you started:
 
 ```yml
-RootFolder:
+NetWerkstatt\FolderPerPage\Extensions\RootFolder:
   ignored_classes:
-    ['VirtualPage', 'ErrorPage']
+    - SilverStripe\CMS\Model\VirtualPage
+    - SilverStripe\ErrorPage\ErrorPage
   create_folder_for_translations: false
   folder_root: 'Articles'
+
 ```
 
 Of course every decorated class can have a seperate folder root, e.g. "Articles" for all pages and "News" for a

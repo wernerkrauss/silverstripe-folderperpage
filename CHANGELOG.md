@@ -2,10 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.5.0] - 2018-02-28
  - Upgrade code to SilverStripe4
  - Bump minimum PHP Version to 7.0.0
- - Updated Travis config
+ - Updated Travis config; run PHPCS test
 
 ## [0.2.2] - 2016-03-09
 ## Changed
