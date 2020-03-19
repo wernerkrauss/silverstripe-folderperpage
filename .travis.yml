@@ -10,40 +10,31 @@ php:
   - 7.4
 
 env:
-  - DB=MYSQL CORE_RELEASE=4.5 PHPUNIT_TEST=1
+  - DB=MYSQL RECIPE_VERSION=4.5.x-dev PHPUNIT_TEST=1
 
 matrix:
   include:
-#    - php: 5.6
-#      env: DB=MYSQL PDO=1 CORE_RELEASE=4.0
-    - php: 7.0
-      env: DB=MYSQL CORE_RELEASE=4.0 PHPCS_TEST=1 PHPUNIT_COVERAGE_TEST=1
-    - php: 7.1
-      env: DB=MYSQL CORE_RELEASE=4.1 PHPUNIT_TEST=1
     - php: 7.2
-      env: DB=MYSQL CORE_RELEASE=4.2 PHPUNIT_TEST=1
-    - php: 7.2
-      env: DB=MYSQL CORE_RELEASE=4.3 PHPUNIT_TEST=1
+      env: DB=MYSQL RECIPE_VERSION=4.3.x-dev PHPCS_TEST=1 PHPUNIT_COVERAGE_TEST=1
     - php: 7.3
-      env: DB=MYSQL CORE_RELEASE=4.4 PHPUNIT_TEST=1
+      env: DB=MYSQL RECIPE_VERSION=4.4.x-dev PHPUNIT_TEST=1
 
-#  allow_failures:
-#    - php: 7.0
 
 before_install:
   - pip install --user codecov
 
 before_script:
+  # Init PHP
+  - phpenv rehash
+  - phpenv config-rm xdebug.ini
+
+  # Install composer dependencies
   - composer self-update || true
   - composer validate
-  - if [[ $CORE_RELEASE == 4.0 ]]; then composer require --no-update silverstripe/installer:4.0.x; fi
-  - if [[ $CORE_RELEASE == 4.1 ]]; then composer require --no-update silverstripe/installer:4.1.x; fi
-  - if [[ $CORE_RELEASE == 4.2 ]]; then composer require --no-update silverstripe/installer:4.2.x; fi
-  - if [[ $CORE_RELEASE == 4.3 ]]; then composer require --no-update silverstripe/installer:4.3.x; fi
-  - if [[ $CORE_RELEASE == 4.4 ]]; then composer require --no-update silverstripe/installer:4.4.x; fi
-  - if [[ $CORE_RELEASE == 4.5 ]]; then composer require --no-update silverstripe/installer:4.5.x; fi
-  - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
-
+  - composer require silverstripe/recipe-cms:"$RECIPE_VERSION"  --no-update
+  - if [[ $DB == PGSQL ]]; then composer require silverstripe/postgresql:2.0.x-dev --no-update; fi
+  - composer install --prefer-source --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
+  
 script:
   - if [[ $PHPUNIT_TEST ]]; then vendor/bin/phpunit tests/; fi
   - if [[ $PHPUNIT_COVERAGE_TEST ]]; then vendor/bin/phpunit --coverage-clover=coverage.clover tests/; fi
