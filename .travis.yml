@@ -9,6 +9,8 @@ php:
   - 7.0
   - 7.1
   - 7.2
+  - 7.3
+  - 7.4
 
 env:
   - DB=MYSQL CORE_RELEASE=4.0 PHPUNIT_TEST=1
@@ -21,6 +23,14 @@ matrix:
       env: DB=MYSQL CORE_RELEASE=4.0 PHPCS_TEST=1 PHPUNIT_COVERAGE_TEST=1
     - php: 7.1
       env: DB=MYSQL CORE_RELEASE=4.1 PHPUNIT_TEST=1
+    - php: 7.2
+      env: DB=MYSQL CORE_RELEASE=4.2 PHPUNIT_TEST=1
+    - php: 7.2
+      env: DB=MYSQL CORE_RELEASE=4.3 PHPUNIT_TEST=1
+    - php: 7.3
+      env: DB=MYSQL CORE_RELEASE=4.4 PHPUNIT_TEST=1
+    - php: 7.4
+      env: DB=MYSQL CORE_RELEASE=4.5 PHPUNIT_TEST=1
 
 #  allow_failures:
 #    - php: 7.0
@@ -33,6 +43,10 @@ before_script:
   - composer validate
   - if [[ $CORE_RELEASE == 4.0 ]]; then composer require --no-update silverstripe/installer:4.0.x; fi
   - if [[ $CORE_RELEASE == 4.1 ]]; then composer require --no-update silverstripe/installer:4.1.x; fi
+  - if [[ $CORE_RELEASE == 4.2 ]]; then composer require --no-update silverstripe/installer:4.2.x; fi
+  - if [[ $CORE_RELEASE == 4.3 ]]; then composer require --no-update silverstripe/installer:4.3.x; fi
+  - if [[ $CORE_RELEASE == 4.4 ]]; then composer require --no-update silverstripe/installer:4.4.x; fi
+  - if [[ $CORE_RELEASE == 4.5 ]]; then composer require --no-update silverstripe/installer:4.5.x; fi
   - composer install --prefer-dist --no-interaction --no-progress --no-suggest --optimize-autoloader --verbose --profile
 
 script:
