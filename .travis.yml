@@ -1,8 +1,8 @@
 # See https://github.com/silverstripe-labs/silverstripe-travis-support for setup details
 
-sudo: false
-
 language: php
+
+dist: trusty
 
 php:
   - 7.2
